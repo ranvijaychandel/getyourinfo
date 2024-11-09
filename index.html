@@ -1,0 +1,246 @@
+<html>
+  <head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      .card {
+        margin-bottom: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container p-2">
+      <h1 class="text-center bg-light">Java Script Get Your information</h1>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header text-center">Your Geo Location</div>
+            <div class="body">
+              <div class="d-flex flex-row bg-light">
+                <div class="col-md-3 p-2 bg-primary text-white">Latitude</div>
+                <div class="col-md-3 p-2 bg-dark text-white" id="lat"></div>
+
+                <div class="col-md-3 p-2 bg-primary text-white">Longitude</div>
+                <div class="col-md-3 p-2 bg-dark text-white" id="long"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header text-center">IP Address API</div>
+            <div class="body">
+              <div class="d-flex flex-row bg-light">
+                <div class="col-md-6 p-2 bg-primary text-white">
+                  Your IP Address :
+                </div>
+                <div
+                  class="col-md-6 p-2 bg-dark text-white"
+                  id="ipaddress"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header text-center">Battery Status</div>
+            <div class="body">
+              <main class="h-screen flex items-center justify-center">
+                <div
+                  class="relative w-[225px] h-24 flex items-center justify-between"
+                >
+                  <div
+                    class="battery-body relative w-[200px] h-24 rounded-md outline outline-2 outline-gray-400"
+                  >
+                    <div
+                      class="battery-precentage rounded-md h-24 flex items-center"
+                    >
+                      <span
+                        class="battery-status text-xl text-gray-900 absolute w-full text-center"
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="battery-head"></div>
+                </div>
+              </main>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header text-center">Your Address</div>
+            <div class="body">
+              <div class="d-flex flex-row bg-light mb-2">
+                <div class="col-md-3 p-2 bg-primary text-white">
+                  City :
+                </div>
+                <div
+                  class="col-md-9 p-2 bg-dark text-white"
+                  id="city"
+                ></div>
+              </div>
+              
+              <div class="d-flex flex-row bg-light mb-2">
+                <div class="col-md-3 p-2 bg-primary text-white">
+                   District :
+                </div>
+                <div
+                  class="col-md-9 p-2 bg-dark text-white"
+                  id="district"
+                ></div>
+              </div>
+
+              <div class="d-flex flex-row bg-light mb-2">
+                <div class="col-md-3 p-2 bg-primary text-white">
+                   State :
+                </div>
+                <div
+                  class="col-md-9 p-2 bg-dark text-white"
+                  id="state"
+                ></div>
+
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    function fetchGeolocation() {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          let lat_val = position.coords.latitude;
+          let long_val = position.coords.longitude;
+
+          let lat = document.getElementById("lat");
+          let long = document.getElementById("long");
+          lat.append(lat_val);
+          long.append(long_val);
+
+          // Call getIP after geolocation is successfully fetched
+          fetchIP();
+          // call the function to get the city address
+          getAddressFromCoordinates(lat_val, long_val);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    }
+    // Function to fetch IP address
+    function fetchIP() {
+      fetch("https://api.ipify.org?format=json")
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("IP Address:", data.ip);
+          document.getElementById("ipaddress").append(data.ip);
+        })
+        .catch((error) => console.error("Error fetching IP address:", error));
+    }
+    // Call the geolocation function to start the process
+    fetchGeolocation();
+    // get battery status
+    function fetchBatteryInfo() {
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if the Battery Status API is supported
+        if ("getBattery" in navigator) {
+          navigator.getBattery().then(function (battery) {
+            // Display battery information
+            updateBatteryInfo(battery);
+
+            // Listen for changes in battery status
+            battery.addEventListener("levelchange", function () {
+              updateBatteryInfo(battery);
+            });
+
+            battery.addEventListener("chargingchange", function () {
+              updateBatteryInfo(battery);
+            });
+          });
+        } else {
+          // API not supported
+          document.querySelector(".battery-status").innerText =
+            "Uh-oh! Your device not supported :(";
+        }
+
+        function updateBatteryInfo(battery) {
+          let batteryBody = document.querySelector(".battery-precentage");
+          let batteryHead = document.querySelector(".battery-head");
+          let status = document.querySelector(".battery-status");
+
+          // Display battery status ane level
+          if (battery.level <= 0.2) {
+            status.innerText = battery.charging ? "⚡Charging" : "🪫Battery Low";
+          } else if (battery.level == 1) {
+            status.innerText = "🔋Battery Full";
+          } else {
+            status.innerText = battery.charging ? "⚡Charging" : "🔌On Battery";
+          }
+
+          // Don't show battery precentage when batter is full
+          if (!(battery.level == 1)) {
+            status.innerText += ` ${Math.floor(battery.level * 100)}%`;
+          }
+
+          // Change battery color when battery level change
+          if (battery.level <= 0.1) {
+            batteryBody.classList.remove("bg-warning", "bg-success");
+            batteryHead.classList.remove("bg-warning", "bg-success");
+            batteryBody.classList.add("bg-danger");
+            batteryHead.classList.add("bg-danger");
+          } else if (battery.level > 0.1 && battery.level <= 0.2) {
+            batteryBody.classList.remove("bg-danger", "bg-success");
+            batteryHead.classList.remove("bg-danger", "bg-success");
+            batteryBody.classList.add("bg-warning");
+            batteryHead.classList.add("bg-warning");
+          } else {
+            batteryBody.classList.remove("bg-danger", "bg-warning");
+            batteryHead.classList.remove("bg-danger", "bg-warning");
+            batteryBody.classList.add("bg-success");
+            batteryHead.classList.add("bg-success");
+          }
+
+          // Change battery level width inside battery body
+          batteryBody.setAttribute("style", `width:${battery.level * 200}px`);
+        }
+      });
+    }
+    fetchBatteryInfo();
+
+    //fetch address api by lat and long
+    function getAddressFromCoordinates(lat, lon) {
+      fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Address:", data);
+          // Display the address in an HTML element
+          document.getElementById("city").append(data.address.state + ' ('+ data.address.suburb +')');
+          document.getElementById("district").append(data.address.state_district +' (Pin : '+data.address.postcode +')');
+          document.getElementById("state").append(data.address.state +' ('+ data.address.country +')');
+        })
+        .catch((error) => console.error("Error fetching address:", error));
+    }
+  </script>
+</html>
