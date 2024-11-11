@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Bootstrap Example</title>
+    <title> GeoLocation </title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
@@ -64,7 +64,7 @@
             <div class="body">
               <main class="h-screen flex items-center justify-center">
                 <div
-                  class="relative w-[225px] h-24 flex items-center justify-between"
+                  c+lass="relative w-[225px] h-24 flex items-center justify-between"
                 >
                   <div
                     class="battery-body relative w-[200px] h-24 rounded-md outline outline-2 outline-gray-400"
@@ -236,7 +236,8 @@
         .then((data) => {
           console.log("Address:", data);
           // Display the address in an HTML element
-          document.getElementById("city").append(data.address.state + ' ('+ data.address.suburb ?? data.address.town +')');
+          let town = data.address.suburb ? data.address.suburb  : data.address.twon;
+          document.getElementById("city").append(data.address.state + ' ('+ town +')');
           document.getElementById("district").append(data.address.state_district +' (Pin : '+data.address.postcode +')');
           document.getElementById("state").append(data.address.state +' ('+ data.address.country +')');
         })
