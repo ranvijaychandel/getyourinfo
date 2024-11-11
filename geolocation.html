@@ -236,7 +236,7 @@
         .then((data) => {
           console.log("Address:", data);
           // Display the address in an HTML element
-          document.getElementById("city").append(data.address.state + ' ('+ data.address.suburb +')');
+          document.getElementById("city").append(data.address.state + ' ('+ data.address.suburb ?? data.address.town +')');
           document.getElementById("district").append(data.address.state_district +' (Pin : '+data.address.postcode +')');
           document.getElementById("state").append(data.address.state +' ('+ data.address.country +')');
         })
